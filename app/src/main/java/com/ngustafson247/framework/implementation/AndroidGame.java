@@ -31,6 +31,8 @@ public abstract class AndroidGame extends Activity implements Game {
     Screen screen;
     WakeLock wakeLock;
 
+    private int frameBufferWidth, frameBufferHeight;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,8 +42,8 @@ public abstract class AndroidGame extends Activity implements Game {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         boolean isPortrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
-        int frameBufferWidth = isPortrait ? 720: 1280 - getStatusBarHeight();
-        int frameBufferHeight = isPortrait ? 1280 - getStatusBarHeight(): 720;
+        frameBufferWidth = isPortrait ? 720: 1280 - getStatusBarHeight();
+        frameBufferHeight = isPortrait ? 1280 - getStatusBarHeight(): 720;
         Bitmap frameBuffer = Bitmap.createBitmap(frameBufferWidth, frameBufferHeight, Config.RGB_565);
 
         float scaleX = (float) frameBufferWidth
@@ -68,6 +70,14 @@ public abstract class AndroidGame extends Activity implements Game {
             result = getResources().getDimensionPixelSize(resourceId);
         }
         return result;
+    }
+
+    public int getFrameBufferWidth() {
+        return frameBufferWidth;
+    }
+
+    public int getFrameBufferHeight() {
+        return frameBufferHeight;
     }
 
     @Override

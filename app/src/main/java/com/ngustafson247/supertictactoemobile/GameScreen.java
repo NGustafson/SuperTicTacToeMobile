@@ -1,5 +1,7 @@
 package com.ngustafson247.supertictactoemobile;
 
+import android.util.Log;
+
 import com.ngustafson247.framework.Game;
 import com.ngustafson247.framework.Graphics;
 import com.ngustafson247.framework.Input;
@@ -16,8 +18,11 @@ public class GameScreen extends Screen{
     private OptionsScreen optionsScreen;
     private GameLogic gameLogic;
 
-    private float scaleX, scaleY;
+    // Scale values
+    private float currentScale, lastScale;
 
+    // Drag values
+    private int originX, originY;
 
     // gameBoard image info
     private final int BOX_SIZE = 230;
@@ -27,13 +32,17 @@ public class GameScreen extends Screen{
             + BORDER_SIZE));
 
 
+    // Log tag
+    private final String TAG = "Game-Screen";
+
     public GameScreen(Game game, OptionsScreen optionsScreen) {
         super(game, true);
         this.optionsScreen = optionsScreen;
         gameLogic = new GameLogic();
         gameLogic.setGameOptions(1);
 
-        scaleX = scaleY = 1.0f;
+        currentScale = lastScale = 1.0f;
+        originX = originY = 0;
     }
 
     @Override
@@ -43,14 +52,49 @@ public class GameScreen extends Screen{
 
         for (TouchEvent event : touchEvents) {
             if (event.type == TouchEvent.TOUCH_UP) {
+
+                // Reset lastScale at the end of an event
+                lastScale = 1.0f;
+
                 if (insideBox(event.x, event.y)) {
                     gameLogic.makePlay(boardIndex, boxI, boxJ);
+                    gameLogic.logBoard();
                 }
             } else if (event.type == TouchEvent.TOUCH_ZOOM) {
-                scaleX = scaleY = event.scale;
+                Log.d(TAG, "lastScale: " + lastScale);
+                if (lastScale == 1.0f) {
+                    lastScale = event.scale;
+                } else {
+                    modifyScale(event.scale);
+                }
+            } else if (event.type == TouchEvent.TOUCH_DRAGGED) {
+                modifyOrigin(event.dragX, event.dragY);
+                Log.d(TAG, "origin: (" + originX + ", " + originY + ")");
             }
         }
 
+    }
+
+    private void modifyOrigin(int dragX, int dragY) {
+        if (gameLogic.getNumBoards() == GameLogic.NumBoards.NINE) {
+            originX += dragX;
+            originY += dragY;
+        }
+    }
+
+    private void modifyScale(float scale) {
+        if (gameLogic.getNumBoards() == GameLogic.NumBoards.NINE) {
+            float adjustedScale = currentScale + (scale - lastScale);
+
+            if (adjustedScale < 0.25) {
+                adjustedScale = 0.25f;
+            } else if (adjustedScale > 4.0) {
+                adjustedScale = 4.0f;
+            }
+
+            lastScale = scale;
+            currentScale = adjustedScale;
+        }
     }
 
     private int boardX, boardY, boardIndex, boxI, boxJ;
@@ -120,10 +164,14 @@ public class GameScreen extends Screen{
     public void paint(float deltaTime) {
         Graphics g = game.getGraphics();
         g.drawImage(Assets.blankBackground, 0, 0);
-        g.drawScaledImage(Assets.SingleBoardBlackBorder, 0, 0, (int) (720 * scaleX), (int) (720 * scaleY), 0, 0, 720, 720);
+        g.drawScaledImage(Assets.SingleBoardBlackBorder, originX, originY, (int) (720 * currentScale), (int) (720 * currentScale), 0, 0, 720, 720);
         //g.drawImage(Assets.SingleBoard, 10, 10);
-        g.drawScaledImage(Assets.SingleBoard, (int) (10 * scaleX), (int) (10 * scaleY), (int) (700 * scaleX), (int) (700 * scaleY), 0, 0, 700, 700);
+        g.drawScaledImage(Assets.SingleBoard, originX + (int) (10 * currentScale), originY + (int) (10 * currentScale), (int) (700 * currentScale), (int) (700 * currentScale), 0, 0, 700, 700);
         paintMarkers();
+    }
+
+    public void paintBoards() {
+
     }
 
     public void paintMarkers() {
@@ -141,17 +189,17 @@ public class GameScreen extends Screen{
                                 boardX + (i * (BOX_SIZE + LINE_SIZE) - 1) + BORDER_SIZE + 10,
                                 boardY + (j * (BOX_SIZE + LINE_SIZE) - 1) + BORDER_SIZE + 10);
                         */g.drawScaledImage(Assets.XMarker,
-                                (int) ((boardX + (i * (BOX_SIZE + LINE_SIZE) - 1) + BORDER_SIZE + 10) * scaleX),
-                                (int) ((boardY + (i * (BOX_SIZE + LINE_SIZE) - 1) + BORDER_SIZE + 10) * scaleY),
-                                (int) (160 * scaleX),
-                                (int) (160 * scaleY),
+                                originX + (int) ((boardX + (i * (BOX_SIZE + LINE_SIZE) - 1) + BORDER_SIZE + 34) * currentScale),
+                                originY + (int) ((boardY + (j * (BOX_SIZE + LINE_SIZE) - 1) + BORDER_SIZE + 34) * currentScale),
+                                (int) (160 * currentScale),
+                                (int) (160 * currentScale),
                                 0, 0, 160, 160);
                     } else if (gameBoard1.getBoxState(i, j) == 'O') {
                         g.drawScaledImage(Assets.OMarker,
-                                (int) ((boardX + (i * (BOX_SIZE + LINE_SIZE) - 1) + BORDER_SIZE + 10) * scaleX),
-                                (int) ((boardY + (i * (BOX_SIZE + LINE_SIZE) - 1) + BORDER_SIZE + 10) * scaleY),
-                                (int) (160 * scaleX),
-                                (int) (160 * scaleY),
+                                originX + (int) ((boardX + (i * (BOX_SIZE + LINE_SIZE) - 1) + BORDER_SIZE + 34) * currentScale),
+                                originY + (int) ((boardY + (j * (BOX_SIZE + LINE_SIZE) - 1) + BORDER_SIZE + 34) * currentScale),
+                                (int) (160 * currentScale),
+                                (int) (160 * currentScale),
                                 0, 0, 160, 160);
                     }
                 }

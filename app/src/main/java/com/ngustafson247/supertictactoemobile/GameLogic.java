@@ -1,5 +1,7 @@
 package com.ngustafson247.supertictactoemobile;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,8 @@ public class GameLogic {
     private NumBoards numBoards;
     //private GameType gameType;
 
+
+    private final String TAG = "Game-Logic";
 
     private List<GameBoard> gameBoards = new ArrayList<>();
 
@@ -125,6 +129,17 @@ public class GameLogic {
         currentBoard = newBoard;
     }
 
+
+    public void logBoard() {
+        GameBoard gameBoard = gameBoards.get(0);
+        Log.d(TAG, "\nStart board log");
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                Log.d(TAG, "(" + i + ", " + j + "): " + gameBoard.getBoxState(i, j));
+            }
+        }
+        Log.d(TAG, "End board log\n");
+    }
 
     public List<GameBoard> getGameBoards() {
         return gameBoards;

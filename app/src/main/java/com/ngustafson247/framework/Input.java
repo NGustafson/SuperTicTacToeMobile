@@ -16,7 +16,7 @@ public interface Input {
         public static final int TOUCH_ZOOM = 4;
 
         public int type;
-        public int x, y;
+        public int x, y, dragX, dragY;
         public int pointer;
         public float scale;
     }

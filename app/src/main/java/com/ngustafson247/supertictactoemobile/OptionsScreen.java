@@ -24,7 +24,7 @@ public class OptionsScreen extends Screen {
 
         for (TouchEvent event : touchEvents) {
             if (event.type == TouchEvent.TOUCH_UP) {
-                if (inBoundsRect(event, 0, 1080, 720, 200)) {
+                if (inBoundsRect(event, 0, game.getFrameBufferHeight() - 200, 720, 200)) {
                     game.setScreen(new GameScreen(game, this));
                 }
             }
@@ -45,8 +45,8 @@ public class OptionsScreen extends Screen {
     public void paint(float deltaTime) {
         Graphics g = game.getGraphics();
         g.drawImage(Assets.blankBackground, 0, 0);
-        g.drawImage(Assets.contGameButton, 0, 870);
-        g.drawImage(Assets.newGameButton, 0, 1080);
+        g.drawImage(Assets.contGameButton, 0, game.getFrameBufferHeight() - 410);
+        g.drawImage(Assets.newGameButton, 0, game.getFrameBufferHeight() - 200);
     }
 
     @Override

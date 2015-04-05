@@ -32,7 +32,11 @@ public class MultiTouchHandler implements TouchHandler {
 
     private String mode;
     float oldDist, newDist;
+    int oldX, oldY;
     PointF point;
+
+    private final String TAG = "Multi-Touch";
+
 
     public MultiTouchHandler(View view, float scaleX, float scaleY) {
         PoolObjectFactory<TouchEvent> factory = new PoolObjectFactory<TouchEvent>() {
@@ -49,6 +53,7 @@ public class MultiTouchHandler implements TouchHandler {
 
         mode = "NONE";
         oldDist = newDist = 0.0f;
+        oldX = oldY = 0;
         point = new PointF();
     }
 
@@ -79,18 +84,21 @@ public class MultiTouchHandler implements TouchHandler {
 
                         oldDist = spacing(event);
                         if (oldDist > 10f) {
-                            Log.d("TAG", "This happened");
+                            Log.d(TAG, "This happened");
                             mode = "ZOOM";
                             midPoint(point, event);
                         }
 
                         touchEvent.type = TouchEvent.TOUCH_DOWN;
                         touchEvent.pointer = pointerId;
-                        touchEvent.x = touchX[i] = (int) (event.getX(i) * scaleX);
-                        touchEvent.y = touchY[i] = (int) (event.getY(i) * scaleY);
+                        touchEvent.x = oldX = touchX[i] = (int) (event.getX(i) * scaleX);
+                        touchEvent.y = oldY = touchY[i] = (int) (event.getY(i) * scaleY);
                         isTouched[i] = true;
                         id[i] = pointerId;
                         touchEventsBuffer.add(touchEvent);
+
+                        Log.d(TAG, "Touch Down - Drag: (" + touchEvent.x + ", " + touchEvent.y + ")");
+
                         break;
 
                     case MotionEvent.ACTION_UP:
@@ -104,7 +112,7 @@ public class MultiTouchHandler implements TouchHandler {
                         touchEvent.pointer = pointerId;
                         touchEvent.x = touchX[i] = (int) (event.getX(i) * scaleX);
                         touchEvent.y = touchY[i] = (int) (event.getY(i) * scaleY);
-                        Log.d("TAG", "Touch Up: " + touchEvent.x + ", " + touchEvent.y);
+                        Log.d(TAG, "Touch Up: " + touchEvent.x + ", " + touchEvent.y);
                         isTouched[i] = false;
                         id[i] = -1;
                         touchEventsBuffer.add(touchEvent);
@@ -120,13 +128,22 @@ public class MultiTouchHandler implements TouchHandler {
                                 touchEvent.scale = newDist / oldDist;
                                 touchEvent.x = touchX[i] = (int) (point.x * scaleX);
                                 touchEvent.y = touchY[i] = (int) (point.y * scaleY);
-                                Log.d("TAG", "Zoom test-Scale: " + touchEvent.scale);
+                                Log.d(TAG, "Zoom test-Scale: " + touchEvent.scale);
                             }
                         } else {
                             touchEvent.type = TouchEvent.TOUCH_DRAGGED;
                             touchEvent.x = touchX[i] = (int) (event.getX(i) * scaleX);
                             touchEvent.y = touchY[i] = (int) (event.getY(i) * scaleY);
-                            Log.d("TAG", "DRAG");
+/*
+                            Log.d(TAG, "" + ((point.x * scaleX) - oldX));
+                            Log.d(TAG, "New: (" + touchX[i] + ", " + touchY[i] + ") Old: (" + touchEvent.x + ", " + touchEvent.y + ")");
+*/
+                            touchEvent.dragX = touchX[i] - oldX;
+                            touchEvent.dragY = touchY[i] - oldY;
+                            oldX = touchEvent.x;
+                            oldY = touchEvent.y;
+
+                            Log.d(TAG, "DRAG: (" + touchEvent.x + ", " + touchEvent.y + ")");
                         }
 
 
