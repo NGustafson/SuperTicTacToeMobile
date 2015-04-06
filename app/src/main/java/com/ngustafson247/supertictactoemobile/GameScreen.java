@@ -185,10 +185,7 @@ public class GameScreen extends Screen{
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     if (gameBoard1.getBoxState(i, j) == 'X') {
-                        /*g.drawImage(Assets.XMarker,
-                                boardX + (i * (BOX_SIZE + LINE_SIZE) - 1) + BORDER_SIZE + 10,
-                                boardY + (j * (BOX_SIZE + LINE_SIZE) - 1) + BORDER_SIZE + 10);
-                        */g.drawScaledImage(Assets.XMarker,
+                        g.drawScaledImage(Assets.XMarker,
                                 originX + (int) ((boardX + (i * (BOX_SIZE + LINE_SIZE) - 1) + BORDER_SIZE + 34) * currentScale),
                                 originY + (int) ((boardY + (j * (BOX_SIZE + LINE_SIZE) - 1) + BORDER_SIZE + 34) * currentScale),
                                 (int) (160 * currentScale),
@@ -224,6 +221,7 @@ public class GameScreen extends Screen{
 
     @Override
     public void backButton() {
+        optionsScreen.setOldGame(this);
         game.setScreen(optionsScreen);
     }
 }

@@ -24,6 +24,9 @@ public class LoadingScreen extends Screen{
         Assets.contGameButton = g.newImage("ContinueButton.png", ImageFormat.RGB565);
         Assets.newGameButton = g.newImage("NewGameButton.png", ImageFormat.RGB565);
 
+        Assets.radioButtonUncheck = g.newImage("radiobutton-unchecked-md.png", ImageFormat.ARGB4444);
+        Assets.radioButtonCheck = g.newImage("radiobutton-checked-sm-md.png", ImageFormat.ARGB4444);
+
 
         Assets.SingleBoardBlackBorder = g.newImage("BlackBorder.png", ImageFormat.ARGB4444);
         Assets.SingleBoard = g.newImage("SingleBoard2.png", ImageFormat.RGB565);

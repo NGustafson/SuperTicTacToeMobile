@@ -14,9 +14,15 @@ public class Assets {
     public static Image newGameButton;
     public static Image contGameButton;
 
+    // Radio Button assets
+    public static Image radioButtonUncheck;
+    public static Image radioButtonCheck;
+
     // Game Screen assets
     public static Image SingleBoardBlackBorder;
     public static Image SingleBoard;
     public static Image XMarker;
     public static Image OMarker;
+
+
 }
