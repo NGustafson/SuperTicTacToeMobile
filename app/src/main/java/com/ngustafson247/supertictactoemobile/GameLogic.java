@@ -41,8 +41,8 @@ public class GameLogic {
             for (int j = 0; j < 3; j++) {
                 for (int i = 0; i < 3; i++) {
                     GameBoard tempBoard = new GameBoard();
-                    tempBoard.setBoardX((720 * i));
-                    tempBoard.setBoardY((720 * j));
+                    tempBoard.setBoardX((730 * i));
+                    tempBoard.setBoardY((730 * j));
 
                     gameBoards.add(tempBoard);
                 }

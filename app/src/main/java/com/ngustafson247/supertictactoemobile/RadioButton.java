@@ -33,7 +33,7 @@ public class RadioButton {
         }
 
         //g.drawImage(Assets.radioButtonUncheck, x, y);
-        g.drawString(text, x + 100, y + 44, paint);
+        g.drawString(text, x + 100, y + 48, paint);
     }
 
     public void setChecked(boolean isChecked) {

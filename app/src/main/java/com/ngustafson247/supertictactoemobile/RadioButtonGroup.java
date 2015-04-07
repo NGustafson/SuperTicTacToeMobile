@@ -33,7 +33,7 @@ public class RadioButtonGroup {
     }
 
     public void addButton(String text) {
-        radioButtons.add(new RadioButton(x, 25 + y + radioButtons.size() * 80 , text));
+        radioButtons.add(new RadioButton(x, 25 + y + radioButtons.size() * 90 , text));
         if (radioButtons.size() == 1) {
             radioButtons.get(0).setChecked(true);
         }
@@ -42,8 +42,8 @@ public class RadioButtonGroup {
     public void checkButtonPress(TouchEvent event) {
         Log.d(TAG, "checking button presses");
         for (int i = 0; i < radioButtons.size(); i++) {
-            Log.d(TAG, "Checking (" + event.x + ", " + event.y + ") against ("+ x + ", " + (y + i*80) + ")");
-            if (inBoundsRect(event, x, y + i * 80, 50, 50)) {
+            Log.d(TAG, "Checking (" + event.x + ", " + event.y + ") against ("+ x + ", " + (y + i*90) + ")");
+            if (inBoundsRect(event, x, y + i * 90, 70, 70)) {
                 changeSelection(i);
                 //radioButtons.get(i).setChecked(true);
             }

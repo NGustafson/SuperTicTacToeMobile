@@ -20,6 +20,7 @@ public class GameScreen extends Screen{
 
     // Scale values
     private float currentScale, lastScale;
+    private final float MIN_SCALE = 720.0f / 2180.0f;
 
     // Drag values
     private int originX, originY;
@@ -39,7 +40,7 @@ public class GameScreen extends Screen{
         super(game, true);
         this.optionsScreen = optionsScreen;
         gameLogic = new GameLogic();
-        gameLogic.setGameOptions(1);
+        gameLogic.setGameOptions(9);
 
         currentScale = lastScale = 1.0f;
         originX = originY = 0;
@@ -77,8 +78,25 @@ public class GameScreen extends Screen{
 
     private void modifyOrigin(int dragX, int dragY) {
         if (gameLogic.getNumBoards() == GameLogic.NumBoards.NINE) {
-            originX += dragX;
-            originY += dragY;
+            if (originX + dragX > 0) {
+                originX = 0;
+            } else if (originX + dragX - 720 < (int) (-2180 * currentScale)) {
+                originX = (int) (-2180 * currentScale) + 720;
+                //Log.d(TAG, "case 2");
+            } else {
+                originX += dragX;
+            }
+
+            if (originY + dragY > 0) {
+                originY = 0;
+            } else if (originY + dragY - (game.getFrameBufferHeight() - 300) < (int) (-2180 * currentScale)) {
+                originY = (int) (-2180 * currentScale) + game.getFrameBufferHeight() - 300;
+                if (originY > 0) {
+                    originY = 0;
+                }
+            } else {
+                originY += dragY;
+            }
         }
     }
 
@@ -86,15 +104,16 @@ public class GameScreen extends Screen{
         if (gameLogic.getNumBoards() == GameLogic.NumBoards.NINE) {
             float adjustedScale = currentScale + (scale - lastScale);
 
-            if (adjustedScale < 0.25) {
-                adjustedScale = 0.25f;
-            } else if (adjustedScale > 4.0) {
-                adjustedScale = 4.0f;
+            if (adjustedScale < MIN_SCALE) {
+                adjustedScale = MIN_SCALE;
+            } else if (adjustedScale > 1.0) {
+                adjustedScale = 1.0f;
             }
 
             lastScale = scale;
             currentScale = adjustedScale;
         }
+        modifyOrigin(0, 0);
     }
 
     private int boardX, boardY, boardIndex, boxI, boxJ;
@@ -164,14 +183,40 @@ public class GameScreen extends Screen{
     public void paint(float deltaTime) {
         Graphics g = game.getGraphics();
         g.drawImage(Assets.blankBackground, 0, 0);
-        g.drawScaledImage(Assets.SingleBoardBlackBorder, originX, originY, (int) (720 * currentScale), (int) (720 * currentScale), 0, 0, 720, 720);
+
         //g.drawImage(Assets.SingleBoard, 10, 10);
-        g.drawScaledImage(Assets.SingleBoard, originX + (int) (10 * currentScale), originY + (int) (10 * currentScale), (int) (700 * currentScale), (int) (700 * currentScale), 0, 0, 700, 700);
+        //g.drawScaledImage(Assets.SingleBoard, originX + (int) (10 * currentScale), originY + (int) (10 * currentScale), (int) (700 * currentScale), (int) (700 * currentScale), 0, 0, 700, 700);
+        paintBoards();
         paintMarkers();
+        g.drawScaledImage(Assets.blankBackground, 0, game.getFrameBufferHeight() - 300, 720, 300, 0, 0, 720, 300);
     }
 
     public void paintBoards() {
+        Graphics g = game.getGraphics();
 
+        if (gameLogic.getNumBoards() == GameLogic.NumBoards.ONE) {
+            g.drawScaledImage(Assets.SingleBoard, originX + (int) (10 * currentScale), originY + (int) (10 * currentScale), (int) (700 * currentScale), (int) (700 * currentScale), 0, 0, 700, 700);
+        } else {
+            int boardX, boardY;
+            for (GameBoard gameBoard : gameLogic.getGameBoards()) {
+                boardX = gameBoard.getBoardX();
+                boardY = gameBoard.getBoardY();
+
+                g.drawScaledImage(Assets.SingleBoard,
+                        originX + (int) ((boardX + 10) * currentScale),
+                        originY + (int) ((boardY + 10) * currentScale),
+                        (int) (700 * currentScale),
+                        (int) (700 * currentScale),
+                        0, 0, 700, 700);
+
+                g.drawScaledImage(Assets.SingleBoardBlackBorder,
+                        originX + (int) (boardX * currentScale),
+                        originY + (int) (boardY * currentScale),
+                        (int) (720 * currentScale),
+                        (int) (720 * currentScale),
+                        0, 0, 720, 720);
+            }
+        }
     }
 
     public void paintMarkers() {

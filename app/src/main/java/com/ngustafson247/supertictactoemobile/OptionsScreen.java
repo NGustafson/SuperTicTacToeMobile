@@ -17,6 +17,7 @@ public class OptionsScreen extends Screen {
 
     private GameScreen oldGame;
     private RadioButtonGroup numBoardOptions;
+    private RadioButtonGroup gameTypeOptions;
 
     public OptionsScreen(Game game) {
         super(game, false);
@@ -24,6 +25,10 @@ public class OptionsScreen extends Screen {
         numBoardOptions = new RadioButtonGroup("Number of Boards", 50, 80);
         numBoardOptions.addButton("One Board");
         numBoardOptions.addButton("Nine Boards");
+
+        gameTypeOptions = new RadioButtonGroup("Game Type", 50, 400);
+        gameTypeOptions.addButton("Player v. Player");
+        gameTypeOptions.addButton("Player v. Computer");
 
     }
 
@@ -40,6 +45,7 @@ public class OptionsScreen extends Screen {
                     game.setScreen(new GameScreen(game, this));
                 } else {
                     numBoardOptions.checkButtonPress(event);
+                    gameTypeOptions.checkButtonPress(event);
                 }
             }
         }
@@ -65,6 +71,7 @@ public class OptionsScreen extends Screen {
 
 
         numBoardOptions.paintButtonGroup(g);
+        gameTypeOptions.paintButtonGroup(g);
 
         g.drawImage(Assets.contGameButton, 0, game.getFrameBufferHeight() - 410);
         g.drawImage(Assets.newGameButton, 0, game.getFrameBufferHeight() - 200);
